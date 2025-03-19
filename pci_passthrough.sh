@@ -1,14 +1,14 @@
 #!/bin/bash
 # PCI Passthrough Hook Script
-# - VENDOR and PRODUCT: From host 'lspci -nn' (e.g., "8086:56a6" for Intel Arc A310)
-# - VM_NAME: From VMM UI (e.g., "debian")
+# - VENDOR and PRODUCT: From host 'lspci -nn' (e.g, "8086:56a6" for Intel Arc A310)
+# - VM_NAME: From VMM UI (e.g. "debian")
 
 VENDOR="8086"
 PRODUCT="56a6"
 VM_NAME="debian"
 LOG_PATH="/var/log/virsh_attach_results.log"  # Set to "" to disable logging
 MAX_WAIT=300
-CHECK_INTERVAL=10
+CHECK_INTERVAL=5
 
 XML_TEMPLATE=$(cat << 'EOF'
 <hostdev mode='subsystem' type='pci' managed='yes'>
@@ -25,7 +25,6 @@ log() {
 
 [ -n "$LOG_PATH" ] && echo "Starting PCI passthrough for VM $VM_NAME" > "$LOG_PATH"
 
-# Wait for VFIO modules to be available
 VFIO_WAIT=0
 while [ $VFIO_WAIT -lt $MAX_WAIT ]; do
     if lsmod | grep -q vfio_pci && ls /dev/vfio/ >/dev/null 2>&1; then
@@ -44,7 +43,6 @@ fi
 
 echo "$VENDOR $PRODUCT" > /sys/bus/pci/drivers/vfio-pci/new_id 2>/dev/null || log "Warning: Failed to bind $VENDOR:$PRODUCT to vfio-pci"
 
-# Wait for VM to be running
 ELAPSED=0
 while [ $ELAPSED -lt $MAX_WAIT ]; do
     VM_LINE=$(/usr/local/bin/virsh list --all --title | grep "$VM_NAME")

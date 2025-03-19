@@ -1,6 +1,6 @@
 # Synology VM PCI Passthrough Script
 
-Based on https://github.com/sramshaw/pci_coral_on_synology this simplified script is intented to pass PCI devices (like a GPU in the PCI-E socket) from the Synology host to a VM running in the Virtual Machine Manager. It will wait for I/O virtualization (VFIO) modules to be loaded & sets it up for the device if needed. It looks for the VM and attaches the device with `virsh` when ready.
+Based on https://github.com/sramshaw/pci_coral_on_synology this simplified script is for passing PCI devices (like a GPU in the PCI-E socket) from the Synology host to a VM running in the Virtual Machine Manager. It will wait for I/O virtualization (VFIO) modules to be loaded & sets it up for the device if needed. It waits until the VM is **running** and attaches the device with `virsh`. My goal was to change the VM configuration and add hardware passthrough to it but I couldn't make it work so I figured attaching it while running is the next best option.
 
 ## Installation
 
